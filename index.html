@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FundFlow 公共榜单</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div>
+        <h1>FundFlow 公共榜单</h1>
+        <p id="subtitle">读取公开快照中...</p>
+      </div>
+      <div class="status">
+        <span class="dot"></span>
+        <span>静态快照</span>
+      </div>
+    </header>
+
+    <section class="summary" aria-label="榜单摘要">
+      <div>
+        <span class="label">交易日</span>
+        <strong id="tradeDate">--</strong>
+      </div>
+      <div>
+        <span class="label">导出时间</span>
+        <strong id="exportedAt">--</strong>
+      </div>
+      <div>
+        <span class="label">公开数量</span>
+        <strong id="rowCount">--</strong>
+      </div>
+    </section>
+
+    <section class="toolbar" aria-label="筛选">
+      <input id="searchInput" type="search" placeholder="搜索股票名称或代码">
+      <select id="gradeFilter" aria-label="评级筛选">
+        <option value="">全部评级</option>
+      </select>
+    </section>
+
+    <section class="board" aria-label="公开榜单">
+      <div class="table-head">
+        <span>排名</span>
+        <span>股票</span>
+        <span>总分</span>
+        <span>评级</span>
+        <span>涨跌</span>
+      </div>
+      <div id="rows" class="rows"></div>
+      <div id="emptyState" class="empty" hidden>没有匹配的结果</div>
+    </section>
+
+    <footer>
+      仅展示本地计算后的公开结果；公网文件不包含评分公式、因子权重、原始行情库或计算代码。
+    </footer>
+  </main>
+  <script src="./app.js"></script>
+</body>
+</html>
