@@ -1,62 +1,127 @@
-<!doctype html>
-<html lang="zh-CN">
+<!DOCTYPE html>
+<html lang="zh">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>FundFlow 公共榜单</title>
-  <link rel="stylesheet" href="./styles.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FundFlow Score - A股资金流向评分</title>
+<link rel="stylesheet" href="./styles.css">
+</head>
+
 </head>
 <body>
-  <main class="shell">
-    <header class="topbar">
-      <div>
-        <h1>FundFlow 公共榜单</h1>
-        <p id="subtitle">读取公开快照中...</p>
-      </div>
-      <div class="status">
-        <span class="dot"></span>
-        <span>静态快照</span>
-      </div>
-    </header>
 
-    <section class="summary" aria-label="榜单摘要">
-      <div>
-        <span class="label">交易日</span>
-        <strong id="tradeDate">--</strong>
-      </div>
-      <div>
-        <span class="label">导出时间</span>
-        <strong id="exportedAt">--</strong>
-      </div>
-      <div>
-        <span class="label">公开数量</span>
-        <strong id="rowCount">--</strong>
-      </div>
-    </section>
+<div class="header">
+  <h1>📊 FundFlow Score</h1>
+  <div class="header-right">
+    <div class="search-box" style="position:relative">
+      <input id="stockSearch" placeholder="🔍 代码/名称 → 卡片" autocomplete="off" style="width:220px" />
+      <div id="searchResults" class="search-results"></div>
+    </div>
+    <span id="updateTime">--</span>
+  </div>
+</div>
 
-    <section class="toolbar" aria-label="筛选">
-      <input id="searchInput" type="search" placeholder="搜索股票名称或代码">
-      <select id="gradeFilter" aria-label="评级筛选">
-        <option value="">全部评级</option>
-      </select>
-    </section>
+<!-- Filter UI -->
+<div class="filter-section" id="filterSection">
+  <div class="filter-cat-tabs" id="filterCatTabs">
+    <button class="filter-cat-tab active" onclick="switchFilterCat('market')">🏛 交易所</button>
+    <button class="filter-cat-tab" onclick="switchFilterCat('index')">📈 指数板块</button>
+    <button class="filter-cat-tab" onclick="switchFilterCat('industry')">🏭 行业</button>
+    <button class="filter-cat-tab" onclick="switchFilterCat('concept')">💡 概念/赛道</button>
+    <button class="filter-cat-tab" onclick="switchFilterCat('ai_chain')">🧠 AI全链路</button>
+    <button class="filter-cat-tab" onclick="switchFilterCat('serenity')">🌿 Serenity数据库</button>
+    <button class="filter-cat-tab" onclick="switchFilterCat('score_trend')">🚀 评分趋势</button>
+  </div>
+  <div class="filter-chips-wrap" id="filterChipsWrap">
+    <div class="filter-chips" id="filterChips"></div>
+  </div>
+</div>
 
-    <section class="board" aria-label="公开榜单">
-      <div class="table-head">
-        <span>排名</span>
-        <span>股票</span>
-        <span>总分</span>
-        <span>评级</span>
-        <span>涨跌</span>
-      </div>
-      <div id="rows" class="rows"></div>
-      <div id="emptyState" class="empty" hidden>没有匹配的结果</div>
-    </section>
+<div class="active-filter-bar" id="activeFilterBar">
+  <span class="filter-result-count" id="resultCount"></span>
+</div>
 
-    <footer>
-      仅展示本地计算后的公开结果；公网文件不包含评分公式、因子权重、原始行情库或计算代码。
-    </footer>
-  </main>
-  <script src="./app.js"></script>
+<div class="screener-panel">
+  <div class="screener-head">
+    <div>
+      <div class="screener-title">股票筛选器</div>
+      <div class="screener-sub">市值单位：亿元；PE/PB/换手率来自最新 daily_basic；ROE 来自最新财报缓存</div>
+    </div>
+    <button class="btn-small" onclick="resetScreener()">清空</button>
+  </div>
+  <div class="screener-bar" id="screenerBar">
+    <div class="screener-filter" data-field="score"></div>
+    <div class="screener-filter" data-field="pct"></div>
+    <div class="screener-filter" data-field="mv"></div>
+    <div class="screener-filter" data-field="float"></div>
+    <div class="screener-filter" data-field="pe"></div>
+    <div class="screener-filter" data-field="pb"></div>
+    <div class="screener-filter" data-field="roe"></div>
+    <div class="screener-filter" data-field="turnover"></div>
+  </div>
+  <div class="screen-actions">
+    <button class="btn-small" onclick="applyPreset('largeQuality')">大市值低估</button>
+    <button class="btn-small" onclick="applyPreset('activeSmall')">活跃中小盘</button>
+    <button class="btn-small" onclick="applyPreset('highScore')">高分强势</button>
+  </div>
+</div>
+
+<div class="basket-panel" id="basketPanel">
+  <div class="basket-head">
+    <div class="basket-title" id="basketTitle">当前篮子概览</div>
+    <div class="basket-sub" id="basketSub">选择行业、概念或 AI 层后自动统计</div>
+  </div>
+  <div class="basket-grid">
+    <div class="basket-stat">
+      <div class="basket-label">成分股</div>
+      <div class="basket-value" id="basketCount">--</div>
+      <div class="basket-note" id="basketScope">当前列表</div>
+    </div>
+    <div class="basket-stat">
+      <div class="basket-label">平均 PE</div>
+      <div class="basket-value" id="basketPe">--</div>
+      <div class="basket-note" id="basketPeNote">仅统计有效正数</div>
+    </div>
+    <div class="basket-stat">
+      <div class="basket-label">平均 PB</div>
+      <div class="basket-value" id="basketPb">--</div>
+      <div class="basket-note" id="basketPbNote">仅统计有效正数</div>
+    </div>
+    <div class="basket-stat">
+      <div class="basket-label">平均分</div>
+      <div class="basket-value" id="basketScoreAvg">--</div>
+      <div class="basket-note">FundFlow 总分</div>
+    </div>
+    <div class="basket-stat">
+      <div class="basket-label">中位数</div>
+      <div class="basket-value" id="basketScoreMed">--</div>
+      <div class="basket-note">FundFlow 总分</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">
+    <span id="cardTitle">股票池股票评分排行</span>
+    <span id="tableSubtitle" style="font-size:11px;color:var(--dim);font-weight:normal"></span>
+  </div>
+  <div id="mainContent">
+    <div class="loading"><div class="loading-spinner"></div><div>加载中...</div></div>
+  </div>
+</div>
+
+<!-- 单股详情 Modal 卡片 -->
+<div class="modal-mask" id="stockCardModal" onclick="if(event.target===this)closeStockCard()">
+  <div class="modal-card">
+    <button class="modal-close" onclick="closeStockCard()">×</button>
+    <div class="modal-body" id="stockCardBody">
+      <div class="loading"><div class="loading-spinner"></div><div>加载中...</div></div>
+    </div>
+  </div>
+</div>
+
+
+<script src="./app.js"></script>
+
 </body>
 </html>
