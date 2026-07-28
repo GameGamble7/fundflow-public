@@ -1,0 +1,76 @@
+name: validate-public-release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Validate public-release
+        run: |
+          python - <<'PY'
+          import json, sys, pathlib
+
+          ROOT = pathlib.Path('.')
+          DATA = ROOT / 'data'
+
+          errors = []
+
+          required = [
+              ROOT / 'index.html',
+              ROOT / 'styles.css',
+              ROOT / 'app.js',
+              DATA / 'leaderboard.json',
+              DATA / 'filters.json',
+              DATA / 'pools.json',
+          ]
+          for p in required:
+              if not p.exists():
+                  errors.append(f'missing: {p}')
+              elif p.stat().st_size == 0:
+                  errors.append(f'empty: {p}')
+
+          if errors:
+              for e in errors:
+                  print(f'  FAIL: {e}', file=sys.stderr)
+              sys.exit(1)
+
+          lb = json.loads((DATA / 'leaderboard.json').read_text(encoding='utf-8'))
+          if lb.get('code') != 0:
+              errors.append(f'leaderboard.json: code must be 0, got {lb.get("code")}')
+
+          stocks = lb.get('stocks') or []
+          if not stocks:
+              errors.append('leaderboard.json: stocks is empty')
+          else:
+              required_fields = ['ts_code', 'name', 'rank', 'total_score', 'grade']
+              first = stocks[0]
+              for f in required_fields:
+                  if f not in first:
+                      errors.append(f'leaderboard.json: stock missing field {f!r}')
+
+          for name in ('filters.json', 'pools.json'):
+              try:
+                  json.loads((DATA / name).read_text(encoding='utf-8'))
+              except Exception as e:
+                  errors.append(f'{name}: {e}')
+
+          if errors:
+              for e in errors:
+                  print(f'  FAIL: {e}', file=sys.stderr)
+              sys.exit(1)
+
+          print(f'OK: leaderboard.json has {len(stocks)} stocks, '
+                f'trade_date={lb.get("trade_date")}, '
+                f'pool={lb.get("pool")}')
+          PY
