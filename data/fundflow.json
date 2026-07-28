@@ -1,9 +1,9 @@
 {
   "meta": {
     "title": "FundFlow Public Snapshot",
-    "trade_date": "20260701",
-    "trade_date_label": "2026-07-01",
-    "exported_at": "2026-07-01 21:02:09",
+    "trade_date": "20260728",
+    "trade_date_label": "2026-07-28",
+    "exported_at": "2026-07-28 22:57:10",
     "row_count": 20,
     "scope": "top 20",
     "privacy": "formula-free static export"
@@ -11,183 +11,183 @@
   "rows": [
     {
       "rank": 1,
-      "code": "688565.SH",
-      "name": "力源科技",
-      "score": 86.7,
+      "code": "688099.SH",
+      "name": "晶晨股份",
+      "score": 87.0,
       "grade": "🥇强势买入",
-      "change_pct": 1.79,
-      "updated_at": "2026-07-01 08:36:17"
+      "change_pct": -2.46,
+      "updated_at": "2026-07-28 14:56:21"
     },
     {
       "rank": 2,
-      "code": "688072.SH",
-      "name": "拓荆科技",
+      "code": "603683.SH",
+      "name": "晶华新材",
       "score": 85.3,
       "grade": "🥇强势买入",
-      "change_pct": 1.09,
-      "updated_at": "2026-07-01 08:36:16"
+      "change_pct": -5.84,
+      "updated_at": "2026-07-28 14:56:05"
     },
     {
       "rank": 3,
-      "code": "603958.SH",
-      "name": "哈森股份",
-      "score": 83.4,
+      "code": "603668.SH",
+      "name": "天马科技",
+      "score": 84.7,
       "grade": "🥈积极关注",
-      "change_pct": 5.08,
-      "updated_at": "2026-07-01 08:36:15"
+      "change_pct": 2.23,
+      "updated_at": "2026-07-28 14:56:32"
     },
     {
       "rank": 4,
-      "code": "688121.SH",
-      "name": "卓然股份",
-      "score": 83.4,
+      "code": "688312.SH",
+      "name": "燕麦科技",
+      "score": 84.7,
       "grade": "🥈积极关注",
-      "change_pct": -16.06,
-      "updated_at": "2026-07-01 08:36:16"
+      "change_pct": -8.79,
+      "updated_at": "2026-07-28 14:56:04"
     },
     {
       "rank": 5,
-      "code": "688508.SH",
-      "name": "芯朋微",
-      "score": 82.4,
+      "code": "688059.SH",
+      "name": "华锐精密",
+      "score": 84.3,
       "grade": "🥈积极关注",
-      "change_pct": 9.83,
-      "updated_at": "2026-07-01 08:36:17"
+      "change_pct": -3.63,
+      "updated_at": "2026-07-28 14:56:33"
     },
     {
       "rank": 6,
-      "code": "688215.SH",
-      "name": "瑞晟智能",
-      "score": 82.0,
+      "code": "688685.SH",
+      "name": "迈信林",
+      "score": 84.2,
       "grade": "🥈积极关注",
-      "change_pct": 0.93,
-      "updated_at": "2026-07-01 08:36:16"
+      "change_pct": -4.14,
+      "updated_at": "2026-07-28 14:56:09"
     },
     {
       "rank": 7,
-      "code": "688388.SH",
-      "name": "嘉元科技",
-      "score": 81.1,
+      "code": "603699.SH",
+      "name": "纽威股份",
+      "score": 84.0,
       "grade": "🥈积极关注",
-      "change_pct": 3.33,
-      "updated_at": "2026-07-01 08:36:17"
+      "change_pct": -2.86,
+      "updated_at": "2026-07-28 14:56:16"
     },
     {
       "rank": 8,
-      "code": "688332.SH",
-      "name": "中科蓝讯",
-      "score": 80.2,
+      "code": "603958.SH",
+      "name": "哈森股份",
+      "score": 84.0,
       "grade": "🥈积极关注",
-      "change_pct": 6.32,
-      "updated_at": "2026-07-01 08:36:17"
+      "change_pct": 1.64,
+      "updated_at": "2026-07-28 14:56:25"
     },
     {
       "rank": 9,
-      "code": "688531.SH",
-      "name": "日联科技",
-      "score": 80.2,
+      "code": "688409.SH",
+      "name": "富创精密",
+      "score": 83.6,
       "grade": "🥈积极关注",
-      "change_pct": 2.46,
-      "updated_at": "2026-07-01 08:36:17"
+      "change_pct": -9.06,
+      "updated_at": "2026-07-28 14:56:26"
     },
     {
       "rank": 10,
-      "code": "688679.SH",
-      "name": "通源环境",
-      "score": 80.0,
+      "code": "688319.SH",
+      "name": "欧林生物",
+      "score": 83.3,
       "grade": "🥈积极关注",
-      "change_pct": 0.12,
-      "updated_at": "2026-07-01 08:36:18"
+      "change_pct": -5.02,
+      "updated_at": "2026-07-28 14:56:05"
     },
     {
       "rank": 11,
-      "code": "605068.SH",
-      "name": "明新旭腾",
-      "score": 79.4,
+      "code": "688361.SH",
+      "name": "中科飞测",
+      "score": 83.2,
       "grade": "🥈积极关注",
-      "change_pct": 4.53,
-      "updated_at": "2026-07-01 08:36:15"
+      "change_pct": -5.25,
+      "updated_at": "2026-07-28 14:56:35"
     },
     {
       "rank": 12,
-      "code": "688110.SH",
-      "name": "东芯股份",
-      "score": 79.4,
+      "code": "688368.SH",
+      "name": "晶丰明源",
+      "score": 82.7,
       "grade": "🥈积极关注",
-      "change_pct": -0.01,
-      "updated_at": "2026-07-01 08:36:16"
+      "change_pct": -10.48,
+      "updated_at": "2026-07-28 14:56:32"
     },
     {
       "rank": 13,
-      "code": "688800.SH",
-      "name": "瑞可达",
-      "score": 79.4,
+      "code": "688233.SH",
+      "name": "神工股份",
+      "score": 82.0,
       "grade": "🥈积极关注",
-      "change_pct": 2.11,
-      "updated_at": "2026-07-01 08:36:18"
+      "change_pct": -6.12,
+      "updated_at": "2026-07-28 14:56:13"
     },
     {
       "rank": 14,
-      "code": "603701.SH",
-      "name": "德宏股份",
-      "score": 79.2,
+      "code": "688758.SH",
+      "name": "赛分科技",
+      "score": 81.9,
       "grade": "🥈积极关注",
-      "change_pct": 6.03,
-      "updated_at": "2026-07-01 08:36:14"
+      "change_pct": -7.14,
+      "updated_at": "2026-07-28 14:56:19"
     },
     {
       "rank": 15,
-      "code": "688213.SH",
-      "name": "思特威-W",
-      "score": 78.7,
+      "code": "688143.SH",
+      "name": "长盈通",
+      "score": 81.7,
       "grade": "🥈积极关注",
-      "change_pct": 5.58,
-      "updated_at": "2026-07-01 08:36:16"
+      "change_pct": -11.77,
+      "updated_at": "2026-07-28 14:56:06"
     },
     {
       "rank": 16,
-      "code": "300502.SZ",
-      "name": "新易盛",
-      "score": 78.6,
+      "code": "688131.SH",
+      "name": "皓元医药",
+      "score": 81.5,
       "grade": "🥈积极关注",
-      "change_pct": 3.34,
-      "updated_at": "2026-07-01 08:36:02"
+      "change_pct": -4.75,
+      "updated_at": "2026-07-28 14:56:33"
     },
     {
       "rank": 17,
-      "code": "688123.SH",
-      "name": "聚辰股份",
-      "score": 78.4,
+      "code": "688028.SH",
+      "name": "沃尔德",
+      "score": 81.4,
       "grade": "🥈积极关注",
-      "change_pct": 6.44,
-      "updated_at": "2026-07-01 08:36:16"
+      "change_pct": -9.26,
+      "updated_at": "2026-07-28 14:56:09"
     },
     {
       "rank": 18,
-      "code": "688262.SH",
-      "name": "国芯科技",
-      "score": 78.4,
+      "code": "688120.SH",
+      "name": "华海清科",
+      "score": 81.3,
       "grade": "🥈积极关注",
-      "change_pct": 5.34,
-      "updated_at": "2026-07-01 08:36:16"
+      "change_pct": -4.97,
+      "updated_at": "2026-07-28 14:56:29"
     },
     {
       "rank": 19,
-      "code": "688336.SH",
-      "name": "三生国健",
-      "score": 78.2,
+      "code": "688012.SH",
+      "name": "中微公司",
+      "score": 81.2,
       "grade": "🥈积极关注",
-      "change_pct": 17.59,
-      "updated_at": "2026-07-01 08:36:17"
+      "change_pct": -4.19,
+      "updated_at": "2026-07-28 14:56:20"
     },
     {
       "rank": 20,
-      "code": "688210.SH",
-      "name": "统联精密",
-      "score": 78.1,
+      "code": "688200.SH",
+      "name": "华峰测控",
+      "score": 81.2,
       "grade": "🥈积极关注",
-      "change_pct": 4.29,
-      "updated_at": "2026-07-01 08:36:16"
+      "change_pct": -7.7,
+      "updated_at": "2026-07-28 14:56:28"
     }
   ]
 }
