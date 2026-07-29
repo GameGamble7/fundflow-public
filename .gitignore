@@ -5,3 +5,7 @@ logs/
 # PowerShell artefacts
 publish.ps1.local.*
 *.bak
+
+# Local deploy script (not part of the published site)
+publish.ps1
+
