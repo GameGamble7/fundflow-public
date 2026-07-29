@@ -1,0 +1,69 @@
+name: publish
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate public-release
+        run: |
+          python - <<'PY'
+          import json, sys, pathlib
+          ROOT = pathlib.Path('.')
+          DATA = ROOT / 'data'
+          errors = []
+          required = [
+              ROOT / 'index.html', ROOT / 'styles.css', ROOT / 'app.js',
+              DATA / 'leaderboard.json', DATA / 'filters.json',
+              DATA / 'pools.json', DATA / 'stocks.json',
+          ]
+          for p in required:
+              if not p.exists() or p.stat().st_size == 0:
+                  errors.append(f'missing/empty: {p}')
+          if errors:
+              for e in errors: print('FAIL:', e, file=sys.stderr)
+              sys.exit(1)
+          lb = json.loads((DATA / 'leaderboard.json').read_text(encoding='utf-8'))
+          if lb.get('code') != 0:
+              errors.append(f'code must be 0, got {lb.get("code")}')
+          if not lb.get('stocks'):
+              errors.append('stocks is empty')
+          for name in ('filters.json', 'pools.json', 'stocks.json'):
+              try:
+                  json.loads((DATA / name).read_text(encoding='utf-8'))
+              except Exception as e:
+                  errors.append(f'{name}: {e}')
+          if errors:
+              for e in errors: print('FAIL:', e, file=sys.stderr)
+              sys.exit(1)
+          print(f'OK: {len(lb["stocks"])} stocks, date={lb.get("trade_date")}')
+          PY
+
+  publish:
+    needs: validate
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+      - id: deployment
+        uses: actions/deploy-pages@v4
