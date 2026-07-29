@@ -9,6 +9,127 @@ function localStockSearch(q) {
   return {results: out.map(s => ({ts_code: s.ts_code, name: s.name}))};
 }
 
+let stocksData = null;
+async function ensureStocksLoaded() {
+  if (stocksData) return stocksData;
+  const ts = Date.now();
+  const resp = await fetch(`./data/stocks.json?v=${ts}`);
+  if (!resp.ok) throw new Error(`stocks.json HTTP ${resp.status}`);
+  const j = await resp.json();
+  stocksData = j.stocks || {};
+  return stocksData;
+}
+function goStock(tsCode) {
+  location.hash = '#stock/' + encodeURIComponent(tsCode);
+}
+function gradeClass(g) {
+  if (!g) return '';
+  if (g.includes('强势买入')) return 'grade-1';
+  if (g.includes('积极关注')) return 'grade-2';
+  if (g.includes('谨慎观望')) return 'grade-3';
+  if (g.includes('中性偏弱')) return 'grade-4';
+  if (g.includes('弱势回避')) return 'grade-5';
+  return '';
+}
+function buildPriceChart(history) {
+  if (!history || history.length < 2) return '<div class="chart-empty">数据不足</div>';
+  const W = 600, H = 120, P = 10;
+  const closes = history.map(h => h.c).filter(v => v != null);
+  const min = Math.min(...closes), max = Math.max(...closes);
+  const range = max - min || 1;
+  const points = history.map((h, i) => {
+    const x = P + (W - 2*P) * i / (history.length - 1);
+    const y = P + (H - 2*P) * (1 - (h.c - min) / range);
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  }).join(' ');
+  return `<svg class="mini-chart" viewBox="0 0 ${W} ${H}"><polyline points="${points}" fill="none" stroke="var(--accent)" stroke-width="1.5"/></svg>`;
+}
+function buildScoreChart(history) {
+  if (!history || history.length < 2) return '<div class="chart-empty">数据不足</div>';
+  const h = [...history].reverse();
+  const W = 600, H = 120, P = 10;
+  const min = 0, max = 100;
+  const points = h.map((x, i) => {
+    const xv = P + (W - 2*P) * i / (h.length - 1);
+    const yv = P + (H - 2*P) * (1 - (x.t - min) / (max - min));
+    return `${xv.toFixed(1)},${yv.toFixed(1)}`;
+  }).join(' ');
+  return `<svg class="mini-chart" viewBox="0 0 ${W} ${H}"><polyline points="${points}" fill="none" stroke="var(--green)" stroke-width="1.5"/></svg>`;
+}
+async function renderStockDetail(tsCode) {
+  const main = document.getElementById('mainContent');
+  main.innerHTML = '<div class="loading"><div class="loading-spinner"></div><div>加载中...</div></div>';
+  try {
+    const stocks = await ensureStocksLoaded();
+    const s = stocks[tsCode];
+    if (!s) {
+      main.innerHTML = `<div class="empty">未找到股票 ${tsCode}</div>`;
+      return;
+    }
+    const gc = gradeClass(s.grade);
+    const pct = s.pct_change || 0;
+    const pctClass = pct > 0 ? 'pct-up' : pct < 0 ? 'pct-down' : 'pct-flat';
+    const fmtPct = `${pct > 0 ? '+' : ''}${pct.toFixed(2)}%`;
+    const last = s.price_history && s.price_history.length ? s.price_history[s.price_history.length - 1] : {};
+    const lastPrice = last.c != null ? last.c.toFixed(2) : '--';
+    const lastScore = s.score_history && s.score_history[0];
+    const historyTags = [];
+    if (s.ai_layer) historyTags.push(s.ai_layer);
+    if (s.ai_chokepoint) historyTags.push(s.ai_chokepoint);
+    if (s.serenity != null) historyTags.push(`Serenity ${Number(s.serenity).toFixed(1)}`);
+    if (s.industry) historyTags.push(s.industry);
+    const conceptHtml = (s.concept_tags || []).slice(0, 8).map(t => `<span class="tag">${t}</span>`).join('');
+    const indexHtml = (s.index_tags || []).slice(0, 6).map(t => `<span class="tag">${t}</span>`).join('');
+    main.innerHTML = `
+      <div class="detail-card">
+        <div class="detail-head">
+          <button class="btn btn-ghost" onclick="location.hash=''">← 返回榜单</button>
+          <h2 class="detail-name">${s.name} <span class="ts-code">${s.ts_code}</span></h2>
+          <span class="grade ${gc}">${s.grade || '--'}</span>
+        </div>
+        <div class="detail-grid">
+          <div class="detail-stat"><div class="lbl">总分</div><div class="val">${(s.total_score || 0).toFixed(1)}</div><div class="note">排名 #${s.rank || '--'}</div></div>
+          <div class="detail-stat"><div class="lbl">涨跌幅</div><div class="val ${pctClass}">${fmtPct}</div><div class="note">${s.trade_date || '--'}</div></div>
+          <div class="detail-stat"><div class="lbl">最新收盘</div><div class="val">${lastPrice}</div><div class="note">${last.d || '--'}</div></div>
+        </div>
+        <div class="detail-section">
+          <h3>评分构成 (A/B/C/D)</h3>
+          <div class="abc-bar">
+            ${['a','b','c','d2'].map(k => {
+              const v = lastScore ? lastScore[k] : 0;
+              return `<div class="abc-cell"><div class="abc-num">${(v || 0).toFixed(1)}</div><div class="abc-lbl">${k === 'd2' ? 'D' : k.toUpperCase()}</div></div>`;
+            }).join('')}
+          </div>
+        </div>
+        <div class="detail-section">
+          <h3>近30天评分走势</h3>
+          ${buildScoreChart(s.score_history)}
+        </div>
+        <div class="detail-section">
+          <h3>近30天收盘价</h3>
+          ${buildPriceChart(s.price_history)}
+        </div>
+        <div class="detail-section">
+          <h3>标签</h3>
+          <div class="tag-list">${conceptHtml}${indexHtml}${historyTags.map(t => `<span class="tag">${t}</span>`).join('')}</div>
+        </div>
+      </div>
+    `;
+  } catch (e) {
+    main.innerHTML = `<div class="empty">加载失败: ${e.message}</div>`;
+  }
+}
+function route() {
+  const hash = location.hash;
+  if (hash.startsWith('#stock/')) {
+    const code = decodeURIComponent(hash.slice(7));
+    renderStockDetail(code);
+  } else {
+    if (typeof loadLeaderboard === 'function') loadLeaderboard(currentPool);
+  }
+}
+window.addEventListener('hashchange', route);
+
 
 // This page depends on Flask APIs and cannot run correctly from a file:// URL.
 // Redirect accidental direct opens to the local application automatically.
@@ -373,7 +494,7 @@ function renderCardSection(letter, title, data, badgeClass, fillLetter, items) {
 
 async function loadFilterOptions() {
   try {
-    const r = await fetch('./data/filters.json?v=1785258167');
+    const r = await fetch('./data/filters.json?v=1785286787');
     if (!r.ok) throw new Error('HTTP ' + r.status);
     const d = await r.json();
     if (d.code === 0) {
@@ -493,7 +614,7 @@ async function loadLeaderboard(pool) {
   document.getElementById('filterSection').style.display = 'flex';
 
   try {
-    let url = `./data/leaderboard.json?v=1785258167`;
+    let url = `./data/leaderboard.json?v=1785286787`;
     const resp = await fetch(url);
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     const text = await resp.text();
@@ -811,7 +932,7 @@ function renderLeaderboard(data) {
     const tags = visibleTags.slice(0, 4).map(t => `<span class="tag">${t}</span>`).join('');
 
     html += `
-    <tr onclick="void 0">
+    <tr onclick="goStock(${s.ts_code})">
       <td><span class="rank ${rankClass}">${s.rank || '-'}</span></td>
       <td class="name-cell">
         <div class="name">${s.name || s.ts_code}</div>
