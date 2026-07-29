@@ -78,28 +78,30 @@ try {
     # Refresh origin tracking.
     Invoke-Git 'fetch' @('fetch', 'origin', 'main')
 
-    # Are we behind / ahead of origin?
-    $behind = (& git rev-list --count HEAD..origin/main).Trim()
-    $ahead  = (& git rev-list --count origin/main..HEAD).Trim()
+    # Are we behind / ahead of origin? Wrap in @() so .Trim() is uniform.
+    $behind = (@(& git rev-list --count HEAD..origin/main))[0].Trim()
+    $ahead  = (@(& git rev-list --count origin/main..HEAD))[0].Trim()
     Write-Log ("ahead={0} behind={1}" -f $ahead, $behind)
 
     if ([int]$behind -gt 0) {
         Invoke-Git 'pull' @('pull', '--ff-only')
     }
 
-    # Inspect working tree.
-    $statusLines = (& git status --porcelain)
-    $hasChanges  = [bool]($statusLines | Where-Object { $_ })
-    Write-Log ("working tree entries: {0}" -f ($statusLines | Where-Object { $_ }).Count)
+    # Inspect working tree. @(...) guarantees an array even when there's
+    # exactly zero or one entry (StrictMode would otherwise complain that
+    # a single string has no .Count).
+    $statusLines = @(git status --porcelain)
+    $dirtyLines  = @($statusLines | Where-Object { $_ })
+    Write-Log ("working tree entries: {0}" -f $dirtyLines.Count)
 
-    if (-not $hasChanges) {
+    if ($dirtyLines.Count -eq 0) {
         Write-Log 'nothing to commit; exit 0'
         exit 0
     }
 
     # Snapshot what is about to be committed (for the log).
     Write-Log 'changes to be committed:'
-    foreach ($line in $statusLines) { if ($line) { Write-Log ("  " + $line) } }
+    foreach ($line in $dirtyLines) { Write-Log ("  " + $line) }
 
     Invoke-Git 'add' @('add', '-A')
 
