@@ -494,7 +494,7 @@ function renderCardSection(letter, title, data, badgeClass, fillLetter, items) {
 
 async function loadFilterOptions() {
   try {
-    const r = await fetch('./data/filters.json?v=1785689376');
+    const r = await fetch('./data/filters.json?v=1785690016');
     if (!r.ok) throw new Error('HTTP ' + r.status);
     const d = await r.json();
     if (d.code === 0) {
@@ -614,7 +614,7 @@ async function loadLeaderboard(pool) {
   document.getElementById('filterSection').style.display = 'flex';
 
   try {
-    let url = `./data/leaderboard.json?v=1785689376`;
+    let url = `./data/leaderboard.json?v=1785690016`;
     const resp = await fetch(url);
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     const text = await resp.text();
